@@ -18,12 +18,14 @@ def game_loop():
 
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[pygame.K_a]:
-            player.move(-1)
+            player.move_tank(-1)
         if keys_pressed[pygame.K_d]:
-            player.move(1)
+            player.move_tank(1)
+
+        player.aim_point = pygame.mouse.get_pos()
 
         update_screen(player)
-        CLOCK.tick(30)
+        CLOCK.tick(60)
 
 
 def update_screen(player):
