@@ -33,7 +33,9 @@ def update_screen(player):
     player.update()
     pygame.display.update()
 
+
 def main():
+    pygame.mouse.set_visible(0)
     game_loop()
     pygame.quit()
 

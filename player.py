@@ -33,7 +33,7 @@ class Player:
 
     def move_barrel(self):
         if self.aim_point[1] <= self.y_pos:
-            self.aim_target = pygame.Rect(self.aim_point, (20, 20))
+            self.aim_target = pygame.Rect((self.aim_point[0] - 10, self.aim_point[1] - 10), (20, 20))
 
         self.center = ((self.x_pos + self.tank_width / 2), (self.y_pos + self.tank_height / 2))
 
