@@ -46,6 +46,7 @@ def game_loop():
             for shot in shots:
                 distance = math.sqrt((sphere.x_pos - shot.end_x_pos) ** 2 + (sphere.y_pos - shot.end_y_pos) ** 2)
                 if distance < sphere.radius:
+                    player.score += 1
                     sphere_hit(shot, sphere, spheres)
                     shots.remove(shot)
                     del shot
@@ -62,7 +63,8 @@ def game_loop():
                 player.health -= 1
                 spheres.remove(sphere)
                 del sphere
-            if len(spheres) == 0:
+            if len(spheres) == 0 or player.health == 0:
+                print(player.score)
                 return
 ################################################################################################
 
@@ -94,7 +96,7 @@ def sphere_hit(shot, sphere, spheres):
         new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
                             new_vel_y + random.randint(-5, 0))
         spheres.append(new_sphere)
-    elif len(spheres) >= 4 and random.randint(1, 8) == 1:
+    elif len(spheres) >= 4 and random.randint(1, 6) == 1:
         new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
                             new_vel_y + random.randint(-5, 0))
         spheres.append(new_sphere)
