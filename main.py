@@ -29,9 +29,10 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and player.time_since_last_shot <= 0:
                 new_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
                 shots.append(new_shot)
+                player.time_since_last_shot = 10
 
         for shot in shots:
             shot.move_shot()
