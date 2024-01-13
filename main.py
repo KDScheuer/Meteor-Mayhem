@@ -34,8 +34,14 @@ def game_loop():
                 shots.append(new_shot)
                 player.time_since_last_shot = 10
 
+        # Moves Shots and Deletes them if they are off the screen in the x-axis
         for shot in shots:
-            shot.move_shot()
+            if shot.start_x_pos < 0 or shot.start_x_pos > WIDTH:
+                shots.remove(shot)
+                del shot
+
+            else:
+                shot.move_shot()
 
         # Call to Update Screen and Sets FPS
         update_screen(player, shots)
