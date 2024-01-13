@@ -62,7 +62,7 @@ def game_loop():
                 player.health -= 1
                 spheres.remove(sphere)
                 del sphere
-            if len(spheres) == 0 or player.health == 0:
+            if len(spheres) == 0:
                 return
 ################################################################################################
 
@@ -82,6 +82,9 @@ def sphere_hit(shot, sphere, spheres):
     # Calculate Spheres New Velocity
     new_vel_x = sphere.x_vel + shot.power * math.cos(impact_angle)
     new_vel_y = sphere.y_vel + shot.power * math.sin(impact_angle)
+
+    if new_vel_y > -5:
+        new_vel_y = -5
 
 
     # Update Spheres Velocities
