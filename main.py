@@ -9,13 +9,14 @@ from spheres import Sphere
 WIDTH, HEIGHT = 1000, 700
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
+BACKGROUND = pygame.transform.scale(pygame.image.load('./Assets/background.png'), (WIDTH, HEIGHT))
 
 
 def game_loop():
     running = True
     player = Player(SCREEN, WIDTH, HEIGHT)
     shots = []
-    initial_sphere = Sphere(SCREEN, WIDTH, WIDTH / 2, HEIGHT / 2, 0, 0)
+    initial_sphere = Sphere(SCREEN, WIDTH, WIDTH / 2, HEIGHT / 2, 0, 0, 0)
     spheres = [initial_sphere]
 
     while running:
@@ -74,6 +75,8 @@ def game_loop():
 
 
 def sphere_hit(shot, sphere, spheres):
+    if sphere.gravity == 0:
+        sphere.gravity = 3
     # Calculate Shots X and Y Velocities
     shot_x_vel = shot.speed * math.cos(shot.shot_angle)
     shot_y_vel = shot.speed * math.sin(shot.shot_angle)
@@ -85,8 +88,8 @@ def sphere_hit(shot, sphere, spheres):
     new_vel_x = sphere.x_vel + shot.power * math.cos(impact_angle)
     new_vel_y = sphere.y_vel + shot.power * math.sin(impact_angle)
 
-    if new_vel_y > -5:
-        new_vel_y = -5
+    if new_vel_y > -10:
+        new_vel_y = -10
 
 
     # Update Spheres Velocities
@@ -110,7 +113,7 @@ def sphere_hit(shot, sphere, spheres):
 
 def update_screen(player, shots, spheres):
     """Calls all update functions and methods to draw everything to the screen"""
-    SCREEN.fill('black')
+    SCREEN.blit(BACKGROUND, (0, 0))
     for shot in shots:
         shot.update()
     for sphere in spheres:
@@ -129,3 +132,5 @@ if __name__ == "__main__":
     pygame.init()
     main()
     pygame.quit()
+
+

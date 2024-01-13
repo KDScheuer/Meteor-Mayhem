@@ -16,7 +16,9 @@ class Player:
         self.center = ((self.x_pos + self.tank_width / 2), (self.y_pos + self.tank_height / 2))
         image = pygame.image.load('./Assets/tank.png')
         self.image = pygame.transform.scale(image, (self.tank_width, self.tank_height))
-        self.aim_target = pygame.Rect(self.x_pos, self.y_pos, 20, 20)  # TODO Replace with Target Image
+        image = pygame.image.load('./Assets/target.png')
+        self.target = pygame.transform.scale(image, (20, 20))
+        self.target_location = (0, 0)
         self.aim_point = (0, 0)
         self.barrel_angle = 90
         self.time_since_last_shot = 0
@@ -24,7 +26,8 @@ class Player:
     def update(self):
         """Draws Player to Screen"""
         self.screen.blit(self.image, (self.x_pos, self.y_pos))
-        pygame.draw.rect(self.screen, 'red', self.aim_target)
+        self.screen.blit(self.target, self.target_location)
+
         pygame.draw.line(self.screen, (117, 71, 18), self.center, self.aim_point, 5)
         self.time_since_last_shot -= 1
 
@@ -45,8 +48,7 @@ class Player:
         # Keeps Player from Aiming and Shooting the Ground
         if self.aim_point[1] <= self.y_pos + self.tank_height / 2:
             self.barrel_angle = math.atan2(self.aim_point[1] - self.center[1], self.aim_point[0] - self.center[0])
-            self.aim_target = pygame.Rect((self.aim_point[0] - 10, self.aim_point[1] - 10), (20, 20))
-
+            self.target_location = (self.aim_point[0] - 10, self.aim_point[1] - 10)
         # Calculates a 50px line for the Tanks Barrel
         self.aim_point = (self.center[0] + 50 * math.cos(self.barrel_angle),
                           self.center[1] + 50 * math.sin(self.barrel_angle))

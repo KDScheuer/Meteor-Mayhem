@@ -2,14 +2,14 @@ import pygame
 import time
 
 class Sphere:
-    def __init__(self, screen, screen_width, x_pos, y_pos, x_vel=0, y_vel=0):
+    def __init__(self, screen, screen_width, x_pos, y_pos, x_vel=0, y_vel=0, grav=3):
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.screen = screen
         self.x_vel = x_vel
         self.y_vel = y_vel
-        self.radius = 20
-        self.gravity = 3
+        self.radius = 25
+        self.gravity = grav
         self.times_hit = 0
         self.screen_width = screen_width
 
@@ -30,3 +30,6 @@ class Sphere:
         self.y_vel *= .98
         self.x_vel *= .98
         self.y_pos += self.gravity
+
+
+
