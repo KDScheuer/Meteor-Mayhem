@@ -56,10 +56,15 @@ def game_loop():
                     del shot
             sphere.move()
 
+###############################################################################################
             # TODO DELETE THIS AFTER DAMAGE IS ADDED THIS IS FOR TESTING ONLY
             if sphere.y_pos > HEIGHT:
+                player.health -= 1
                 spheres.remove(sphere)
                 del sphere
+            if len(spheres) == 0 or player.health == 0:
+                return
+################################################################################################
 
         # Call to Update Screen and Sets FPS
         update_screen(player, shots, spheres)
