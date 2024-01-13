@@ -10,7 +10,8 @@ class Shot:
         self.end_y_pos = 0
         self.shot_angle = angle
         self.length = 20
-        self.speed = 10
+        self.speed = 20
+        self.power = 10
         self.screen = screen
 
     def move_shot(self):
