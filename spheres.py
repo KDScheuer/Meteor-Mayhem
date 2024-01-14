@@ -41,19 +41,19 @@ class Explosion:
         self.y_pos = y_pos
         self.iteration = 1
         self.screen = screen
-        self.image_1 = pygame.rect.Rect((self.x_pos - 5, self.y_pos - 10), (10, 10))
-        self.image_2 = pygame.rect.Rect((self.x_pos - 10, self.y_pos - 20), (20, 20))
-        self.image_3 = pygame.rect.Rect((self.x_pos - 15, self.y_pos - 30), (30, 30))
-        self.image_4 = pygame.rect.Rect((self.x_pos - 20, self.y_pos - 40), (40, 40))
+        self.image_1 = pygame.image.load('./Assets/explosion_1.png')
+        self.image_2 = pygame.image.load('./Assets/explosion_2.png')
+        self.image_3 = pygame.image.load('./Assets/explosion_3.png')
+        self.image_4 = pygame.image.load('./Assets/explosion_4.png')
 
     def update(self):
-        if self.iteration == 1:
-            pygame.draw.rect(self.screen, 'black', self.image_1)
-        elif self.iteration == 2:
-            pygame.draw.rect(self.screen, 'black', self.image_2)
-        elif self.iteration == 3:
-            pygame.draw.rect(self.screen, 'black', self.image_3)
-        elif self.iteration == 4:
-            pygame.draw.rect(self.screen, 'black', self.image_4)
+        if self.iteration <= 3:
+            self.screen.blit(self.image_1, (self.x_pos - 5, self.y_pos - 10))
+        elif self.iteration <= 6:
+            self.screen.blit(self.image_2, (self.x_pos - 10, self.y_pos - 20))
+        elif self.iteration <= 10:
+            self.screen.blit(self.image_3, (self.x_pos - 15, self.y_pos - 30))
+        elif self.iteration <= 15:
+            self.screen.blit(self.image_4, (self.x_pos - 20, self.y_pos - 40))
 
         self.iteration += 1

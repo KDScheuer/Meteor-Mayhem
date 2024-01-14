@@ -85,9 +85,9 @@ def game_loop():
             if sphere.y_pos + sphere.radius > ground:
                 player.health -= 1
                 spheres.remove(sphere)
-                screen_shake = True
                 explosion = Explosion(SCREEN, sphere.x_pos, sphere.y_pos + sphere.radius)
                 explosions.append(explosion)
+                screen_shake = True
                 del sphere
             if len(spheres) == 0 or player.health == 0:
                 print(player.score)
@@ -217,7 +217,7 @@ def update_screen(player, shots, spheres, power_ups, screen_shake, explosions):
     if not screen_shake:
         SCREEN.blit(BACKGROUND, (0, 0))
     else:
-        SCREEN.blit(BACKGROUND, (0, 3))
+        SCREEN.blit(BACKGROUND, (0, random.randint(2, 4)))
 
     for explosion in explosions:
         explosion.update()
