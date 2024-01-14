@@ -3,7 +3,7 @@ import math
 import random
 from player import Player
 from shots import Shot
-from spheres import Sphere
+from spheres import Sphere, Explosion
 from power_ups import PowerUp
 
 # Global Variables
@@ -26,6 +26,7 @@ def game_loop():
     power_ups = []
     freeze_active = False
     auto_fire_active = False
+    explosions = []
 
     while running:
         screen_shake = False
@@ -85,6 +86,8 @@ def game_loop():
                 player.health -= 1
                 spheres.remove(sphere)
                 screen_shake = True
+                explosion = Explosion(SCREEN, sphere.x_pos, sphere.y_pos + sphere.radius)
+                explosions.append(explosion)
                 del sphere
             if len(spheres) == 0 or player.health == 0:
                 print(player.score)
@@ -117,7 +120,7 @@ def game_loop():
             shots, auto_fire_active = power_up_machine_gun(shots, player, tick, time_played_seconds)
 
         # Call to Update Screen and Sets FPS
-        update_screen(player, shots, spheres, power_ups, screen_shake)
+        update_screen(player, shots, spheres, power_ups, screen_shake, explosions)
         CLOCK.tick(FPS)
 
 
@@ -209,12 +212,15 @@ def sphere_hit(shot, sphere, spheres):
         del sphere
 
 
-def update_screen(player, shots, spheres, power_ups, screen_shake):
+def update_screen(player, shots, spheres, power_ups, screen_shake, explosions):
     """Calls all update functions and methods to draw everything to the screen"""
     if not screen_shake:
         SCREEN.blit(BACKGROUND, (0, 0))
     else:
         SCREEN.blit(BACKGROUND, (0, 3))
+
+    for explosion in explosions:
+        explosion.update()
 
     for shot in shots:
         shot.update()
