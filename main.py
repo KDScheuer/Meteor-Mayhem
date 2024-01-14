@@ -1,5 +1,3 @@
-import time
-
 import pygame
 import math
 import random
@@ -24,7 +22,7 @@ def game_loop():
     initial_sphere = Sphere(SCREEN, WIDTH, WIDTH / 2, HEIGHT / 2, 0, 0, 0)
     spheres = [initial_sphere]
     tick, time_played_seconds = 0, 0
-    power_up_spawn_rate_seconds = 1
+    power_up_spawn_rate_seconds = 10
     power_ups = []
     freeze_active = False
     auto_fire_active = False
@@ -188,7 +186,7 @@ def sphere_hit(shot, sphere, spheres):
     sphere.x_vel = new_vel_x
     sphere.y_vel = new_vel_y
 
-    if len(spheres) < 4 and random.randint(1, 4) == 1:
+    if len(spheres) < 4:
         new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
                             new_vel_y + random.randint(-5, 0))
         if sphere.frozen_time != 0:
@@ -196,7 +194,7 @@ def sphere_hit(shot, sphere, spheres):
 
         spheres.append(new_sphere)
 
-    elif len(spheres) >= 4 and random.randint(1, 6) == 1:
+    elif len(spheres) >= 4 and random.randint(1, 7) == 1:
         new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
                             new_vel_y + random.randint(-5, 0))
         if sphere.frozen_time != 0:
