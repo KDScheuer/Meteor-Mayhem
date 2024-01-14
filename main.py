@@ -1,3 +1,5 @@
+import time
+
 import pygame
 import math
 import random
@@ -24,12 +26,9 @@ def game_loop():
     tick, time_played_seconds = 0, 0
     power_up_spawn_rate_seconds = 1
     power_ups = []
-    freeze = False
-    freeze_time = 0
-    freeze_length_seconds = 3
-    auto_fire = False
-    auto_fire_time = 0
-    auto_fire_length_seconds = 2
+    freeze_active = False
+    auto_fire_active = False
+
     while running:
         # Calculate Time the Game has been Running
         if tick == FPS:
@@ -37,20 +36,6 @@ def game_loop():
             tick = 0
         else:
             tick += 1
-
-        if freeze_time != 0 and time_played_seconds - freeze_time >= freeze_length_seconds:
-            for sphere in spheres:
-                sphere.frozen = False
-                freeze = False
-                freeze_time = 0
-
-        if auto_fire is True and tick % 3 == 0:
-            auto_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
-            shots.append(auto_shot)
-
-        if auto_fire_time != 0 and time_played_seconds - auto_fire_time >= auto_fire_length_seconds:
-            auto_fire = False
-            auto_fire_time = 0
 
         # Gets Keys Pressed and Moves the Player Accordingly
         keys_pressed = pygame.key.get_pressed()
@@ -69,6 +54,7 @@ def game_loop():
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN and player.time_since_last_shot <= 0:
                 new_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
+                new_shot.move_shot()
                 shots.append(new_shot)
                 player.time_since_last_shot = 5
 
@@ -89,7 +75,7 @@ def game_loop():
                 elif shot.start_x_pos < 0 or shot.start_x_pos > WIDTH:
                     shots.remove(shot)
                     del shot
-            if freeze is True and sphere.frozen is True:
+            if freeze_active is True and sphere.frozen is True:
                 continue
             else:
                 sphere.move()
@@ -118,18 +104,57 @@ def game_loop():
                 if power_ups[0].power == 1:
                     player.health += 1
                 elif power_ups[0].power == 2:
-                    for sphere in spheres:
-                        sphere.frozen = True
-                        freeze_time = time_played_seconds
-                        freeze = True
+                    freeze_active = True
                 elif power_ups[0].power == 3:
-                    auto_fire = True
-                    auto_fire_time = time_played_seconds
+                    auto_fire_active = True
+
                 power_ups.remove(power_ups[0])
+
+        if freeze_active:
+            freeze_active = power_up_freeze(spheres, time_played_seconds)
+
+        if auto_fire_active:
+            shots, auto_fire_active = power_up_machine_gun(shots, player, tick, time_played_seconds)
 
         # Call to Update Screen and Sets FPS
         update_screen(player, shots, spheres, power_ups)
         CLOCK.tick(FPS)
+
+
+def power_up_freeze(spheres, game_time):
+    duration = 3
+    print(spheres[0].frozen_time, game_time)
+    for sphere in spheres:
+        if sphere.frozen_time == 0:
+            sphere.frozen = True
+            sphere.frozen_time = game_time
+
+        elif game_time - sphere.frozen_time >= duration:
+            for s in spheres:
+                sphere.frozen = False
+                s.frozen_time = 0
+            return False
+
+    return True
+
+
+def power_up_machine_gun(shots, player, tick, game_time):
+    duration = 3
+
+    if player.machine_gun_active_time == 0:
+        player.machine_gun_active_time = game_time
+
+    if tick % 3 == 0:
+        auto_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
+        print(auto_shot.start_x_pos, auto_shot.start_y_pos, auto_shot.end_x_pos, auto_shot.end_y_pos)
+        auto_shot.move_shot()
+        shots.append(auto_shot)
+
+    if game_time - player.machine_gun_active_time >= duration:
+        player.machine_gun_active_time = 0
+        return shots, False
+
+    return shots, True
 
 
 def power_up_collected(player, power_up):
@@ -162,13 +187,21 @@ def sphere_hit(shot, sphere, spheres):
     # Update Spheres Velocities
     sphere.x_vel = new_vel_x
     sphere.y_vel = new_vel_y
+
     if len(spheres) < 4 and random.randint(1, 4) == 1:
         new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
                             new_vel_y + random.randint(-5, 0))
+        if sphere.frozen_time != 0:
+            new_sphere.frozen_time = sphere.frozen_time
+
         spheres.append(new_sphere)
+
     elif len(spheres) >= 4 and random.randint(1, 6) == 1:
         new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
                             new_vel_y + random.randint(-5, 0))
+        if sphere.frozen_time != 0:
+            new_sphere.frozen_time = sphere.frozen_time
+
         spheres.append(new_sphere)
 
     sphere.times_hit += 1

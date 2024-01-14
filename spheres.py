@@ -13,6 +13,7 @@ class Sphere:
         self.times_hit = 0
         self.screen_width = screen_width
         self.frozen = False
+        self.frozen_time = 0
 
     def update(self):
         if self.y_pos > 0:

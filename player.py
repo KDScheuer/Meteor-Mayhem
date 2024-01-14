@@ -22,6 +22,7 @@ class Player:
         self.aim_point = (0, 0)
         self.barrel_angle = 90
         self.time_since_last_shot = 0
+        self.machine_gun_active_time = 0
 
     def update(self):
         """Draws Player to Screen"""
