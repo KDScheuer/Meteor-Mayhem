@@ -28,6 +28,7 @@ def game_loop():
     auto_fire_active = False
 
     while running:
+        screen_shake = False
         # Calculate Time the Game has been Running
         if tick == FPS:
             time_played_seconds += 1
@@ -83,6 +84,7 @@ def game_loop():
             if sphere.y_pos + sphere.radius > ground:
                 player.health -= 1
                 spheres.remove(sphere)
+                screen_shake = True
                 del sphere
             if len(spheres) == 0 or player.health == 0:
                 print(player.score)
@@ -115,7 +117,7 @@ def game_loop():
             shots, auto_fire_active = power_up_machine_gun(shots, player, tick, time_played_seconds)
 
         # Call to Update Screen and Sets FPS
-        update_screen(player, shots, spheres, power_ups)
+        update_screen(player, shots, spheres, power_ups, screen_shake)
         CLOCK.tick(FPS)
 
 
@@ -207,9 +209,12 @@ def sphere_hit(shot, sphere, spheres):
         del sphere
 
 
-def update_screen(player, shots, spheres, power_ups):
+def update_screen(player, shots, spheres, power_ups, screen_shake):
     """Calls all update functions and methods to draw everything to the screen"""
-    SCREEN.blit(BACKGROUND, (0, 0))
+    if not screen_shake:
+        SCREEN.blit(BACKGROUND, (0, 0))
+    else:
+        SCREEN.blit(BACKGROUND, (0, 3))
 
     for shot in shots:
         shot.update()

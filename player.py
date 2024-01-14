@@ -56,7 +56,6 @@ class Player:
         if direction == 1 and self.x_pos <= self.screen_width - self.tank_width:
             self.x_pos += self.move_speed * direction
 
-
     def move_barrel(self):
         """Moves the Tank Barrel to Point at Mouse"""
         # Calculates Where the Beginning of the Barrel is
