@@ -24,7 +24,12 @@ def game_loop():
     tick, time_played_seconds = 0, 0
     power_up_spawn_rate_seconds = 1
     power_ups = []
-
+    freeze = False
+    freeze_time = 0
+    freeze_length_seconds = 3
+    auto_fire = False
+    auto_fire_time = 0
+    auto_fire_length_seconds = 2
     while running:
         # Calculate Time the Game has been Running
         if tick == FPS:
@@ -32,6 +37,20 @@ def game_loop():
             tick = 0
         else:
             tick += 1
+
+        if freeze_time != 0 and time_played_seconds - freeze_time >= freeze_length_seconds:
+            for sphere in spheres:
+                sphere.frozen = False
+                freeze = False
+                freeze_time = 0
+
+        if auto_fire is True and tick % 3 == 0:
+            auto_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
+            shots.append(auto_shot)
+
+        if auto_fire_time != 0 and time_played_seconds - auto_fire_time >= auto_fire_length_seconds:
+            auto_fire = False
+            auto_fire_time = 0
 
         # Gets Keys Pressed and Moves the Player Accordingly
         keys_pressed = pygame.key.get_pressed()
@@ -62,6 +81,7 @@ def game_loop():
                 if distance < sphere.radius:
                     player.score += 1
                     sphere_hit(shot, sphere, spheres)
+                    sphere.frozen = False
                     shots.remove(shot)
                     del shot
                     continue
@@ -69,7 +89,10 @@ def game_loop():
                 elif shot.start_x_pos < 0 or shot.start_x_pos > WIDTH:
                     shots.remove(shot)
                     del shot
-            sphere.move()
+            if freeze is True and sphere.frozen is True:
+                continue
+            else:
+                sphere.move()
 
             ###############################################################################################
             # TODO DELETE THIS AFTER DAMAGE IS ADDED THIS IS FOR TESTING ONLY
@@ -92,7 +115,16 @@ def game_loop():
             if power_ups[0].y_pos + power_ups[0].height > ground:
                 power_ups.remove(power_ups[0])
             elif power_up_collected(player, power_ups[0]):
-                print('collected')
+                if power_ups[0].power == 1:
+                    player.health += 1
+                elif power_ups[0].power == 2:
+                    for sphere in spheres:
+                        sphere.frozen = True
+                        freeze_time = time_played_seconds
+                        freeze = True
+                elif power_ups[0].power == 3:
+                    auto_fire = True
+                    auto_fire_time = time_played_seconds
                 power_ups.remove(power_ups[0])
 
         # Call to Update Screen and Sets FPS

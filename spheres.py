@@ -12,6 +12,7 @@ class Sphere:
         self.gravity = grav
         self.times_hit = 0
         self.screen_width = screen_width
+        self.frozen = False
 
     def update(self):
         if self.y_pos > 0:
