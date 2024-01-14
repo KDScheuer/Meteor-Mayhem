@@ -12,6 +12,7 @@ SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
 BACKGROUND = pygame.transform.scale(pygame.image.load('./Assets/background.png'), (WIDTH, HEIGHT))
 FPS = 60
+SCREEN_SHAKE = 0
 
 
 def game_loop():
@@ -29,7 +30,7 @@ def game_loop():
     explosions = []
 
     while running:
-        screen_shake = False
+        global SCREEN_SHAKE
         # Calculate Time the Game has been Running
         if tick == FPS:
             time_played_seconds += 1
@@ -87,7 +88,7 @@ def game_loop():
                 spheres.remove(sphere)
                 explosion = Explosion(SCREEN, sphere.x_pos, sphere.y_pos + sphere.radius)
                 explosions.append(explosion)
-                screen_shake = True
+                SCREEN_SHAKE = 3
                 del sphere
             if len(spheres) == 0 or player.health == 0:
                 print(player.score)
@@ -120,7 +121,7 @@ def game_loop():
             shots, auto_fire_active = power_up_machine_gun(shots, player, tick, time_played_seconds)
 
         # Call to Update Screen and Sets FPS
-        update_screen(player, shots, spheres, power_ups, screen_shake, explosions)
+        update_screen(player, shots, spheres, power_ups, explosions)
         CLOCK.tick(FPS)
 
 
@@ -212,12 +213,14 @@ def sphere_hit(shot, sphere, spheres):
         del sphere
 
 
-def update_screen(player, shots, spheres, power_ups, screen_shake, explosions):
+def update_screen(player, shots, spheres, power_ups, explosions):
     """Calls all update functions and methods to draw everything to the screen"""
-    if not screen_shake:
+    global SCREEN_SHAKE
+    if SCREEN_SHAKE == 0:
         SCREEN.blit(BACKGROUND, (0, 0))
     else:
         SCREEN.blit(BACKGROUND, (0, random.randint(2, 4)))
+        SCREEN_SHAKE -= 1
 
     for explosion in explosions:
         explosion.update()
