@@ -4,22 +4,35 @@ import random
 from player import Player
 from shots import Shot
 from spheres import Sphere
+from power_ups import PowerUp
 
 # Global Variables
 WIDTH, HEIGHT = 1000, 700
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 CLOCK = pygame.time.Clock()
 BACKGROUND = pygame.transform.scale(pygame.image.load('./Assets/background.png'), (WIDTH, HEIGHT))
+FPS = 60
 
 
 def game_loop():
     running = True
     player = Player(SCREEN, WIDTH, HEIGHT)
+    ground = player.y_pos + player.tank_height
     shots = []
     initial_sphere = Sphere(SCREEN, WIDTH, WIDTH / 2, HEIGHT / 2, 0, 0, 0)
     spheres = [initial_sphere]
+    tick, time_played_seconds = 0, 0
+    power_up_spawn_rate_seconds = 1
+    power_ups = []
 
     while running:
+        # Calculate Time the Game has been Running
+        if tick == FPS:
+            time_played_seconds += 1
+            tick = 0
+        else:
+            tick += 1
+
         # Gets Keys Pressed and Moves the Player Accordingly
         keys_pressed = pygame.key.get_pressed()
         if keys_pressed[pygame.K_a]:
@@ -58,20 +71,43 @@ def game_loop():
                     del shot
             sphere.move()
 
-###############################################################################################
+            ###############################################################################################
             # TODO DELETE THIS AFTER DAMAGE IS ADDED THIS IS FOR TESTING ONLY
-            if sphere.y_pos > HEIGHT:
+            if sphere.y_pos + sphere.radius > ground:
                 player.health -= 1
                 spheres.remove(sphere)
                 del sphere
             if len(spheres) == 0 or player.health == 0:
                 print(player.score)
                 return
-################################################################################################
+        ################################################################################################
+
+        if time_played_seconds % power_up_spawn_rate_seconds == 0 and time_played_seconds != 0 and len(
+                power_ups) == 0:
+            power_up = PowerUp(SCREEN, random.randint(1, 3), WIDTH)
+            power_ups.append(power_up)
+
+        if len(power_ups) != 0:
+            power_ups[0].move()
+            if power_ups[0].y_pos + power_ups[0].height > ground:
+                power_ups.remove(power_ups[0])
+            elif power_up_collected(player, power_ups[0]):
+                print('collected')
+                power_ups.remove(power_ups[0])
 
         # Call to Update Screen and Sets FPS
-        update_screen(player, shots, spheres)
-        CLOCK.tick(60)
+        update_screen(player, shots, spheres, power_ups)
+        CLOCK.tick(FPS)
+
+
+def power_up_collected(player, power_up):
+    if any(power_up.y_pos + i in range(int(player.y_pos), int(player.y_pos) + player.tank_height)
+           for i in range(power_up.height)):
+        if any(power_up.x_pos + i in range(player.x_pos, player.x_pos + player.tank_width)
+               for i in range(power_up.width)):
+            return True
+    else:
+        return False
 
 
 def sphere_hit(shot, sphere, spheres):
@@ -90,7 +126,6 @@ def sphere_hit(shot, sphere, spheres):
 
     if new_vel_y > -10:
         new_vel_y = -10
-
 
     # Update Spheres Velocities
     sphere.x_vel = new_vel_x
@@ -111,13 +146,18 @@ def sphere_hit(shot, sphere, spheres):
         del sphere
 
 
-def update_screen(player, shots, spheres):
+def update_screen(player, shots, spheres, power_ups):
     """Calls all update functions and methods to draw everything to the screen"""
     SCREEN.blit(BACKGROUND, (0, 0))
+
     for shot in shots:
         shot.update()
     for sphere in spheres:
         sphere.update()
+
+    if len(power_ups) != 0:
+        power_ups[0].update()
+
     player.update()
     pygame.display.update()
 
@@ -132,5 +172,3 @@ if __name__ == "__main__":
     pygame.init()
     main()
     pygame.quit()
-
-
