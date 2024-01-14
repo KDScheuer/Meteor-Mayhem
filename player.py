@@ -5,7 +5,7 @@ import math
 class Player:
     def __init__(self, screen, width, height):
         self.x_pos = width // 2
-        self.y_pos = height * .9
+        self.y_pos = height * .85
         self.health = 3
         self.score = 0
         self.screen = screen

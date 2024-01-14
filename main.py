@@ -22,7 +22,7 @@ def game_loop():
     initial_sphere = Sphere(SCREEN, WIDTH, WIDTH / 2, HEIGHT / 2, 0, 0, 0)
     spheres = [initial_sphere]
     tick, time_played_seconds = 0, 0
-    power_up_spawn_rate_seconds = 10
+    power_up_spawn_rate_seconds = 1
     power_ups = []
     freeze_active = False
     auto_fire_active = False
@@ -121,7 +121,6 @@ def game_loop():
 
 def power_up_freeze(spheres, game_time):
     duration = 3
-    print(spheres[0].frozen_time, game_time)
     for sphere in spheres:
         if sphere.frozen_time == 0:
             sphere.frozen = True
@@ -144,7 +143,6 @@ def power_up_machine_gun(shots, player, tick, game_time):
 
     if tick % 3 == 0:
         auto_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
-        print(auto_shot.start_x_pos, auto_shot.start_y_pos, auto_shot.end_x_pos, auto_shot.end_y_pos)
         auto_shot.move_shot()
         shots.append(auto_shot)
 
