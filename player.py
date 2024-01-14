@@ -6,8 +6,6 @@ class Player:
     def __init__(self, screen, width, height):
         self.x_pos = width // 2
         self.y_pos = height * .85
-        self.health = 3
-        self.score = 0
         self.screen = screen
         self.screen_width = width
         self.tank_width = 100
@@ -23,11 +21,29 @@ class Player:
         self.barrel_angle = 90
         self.time_since_last_shot = 0
         self.machine_gun_active_time = 0
+        pygame.font.init()
+        font_size = 70
+        self.font = pygame.font.Font(None, font_size)
+        self.health = 3
+        self.health_pos_1_digit = (270, 650)
+        self.health_pos_2_digit = (240, 650)
+        self.score = 0
+        self.score_pos = (670, 650)
 
     def update(self):
         """Draws Player to Screen"""
         self.screen.blit(self.image, (self.x_pos, self.y_pos))
         self.screen.blit(self.target, self.target_location)
+
+        if self.health < 10:
+            health_surface = self.font.render(str(self.health), True, 'white')
+            self.screen.blit(health_surface, self.health_pos_1_digit)
+        else:
+            health_surface = self.font.render(str(self.health), True, 'white')
+            self.screen.blit(health_surface, self.health_pos_2_digit)
+
+        score_surface = self.font.render(str(self.score), True, 'white')
+        self.screen.blit(score_surface, self.score_pos)
 
         pygame.draw.line(self.screen, (117, 71, 18), self.center, self.aim_point, 5)
         self.time_since_last_shot -= 1
