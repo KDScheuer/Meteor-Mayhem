@@ -13,6 +13,8 @@ CLOCK = pygame.time.Clock()
 BACKGROUND = pygame.transform.scale(pygame.image.load('./Assets/background.png'), (WIDTH, HEIGHT))
 FPS = 60
 SCREEN_SHAKE = 0
+DISPLAY_CONTROLS = True
+EXPLOSIONS = []
 
 
 def game_loop():
@@ -20,17 +22,17 @@ def game_loop():
     player = Player(SCREEN, WIDTH, HEIGHT)
     ground = player.y_pos + player.tank_height
     shots = []
-    initial_sphere = Sphere(SCREEN, WIDTH, WIDTH / 2, HEIGHT / 2, 0, 0, 0)
+    initial_sphere = Sphere(SCREEN, WIDTH, WIDTH / 2, HEIGHT / 2 + 50, 0, 0, 0)
     spheres = [initial_sphere]
     tick, time_played_seconds = 0, 0
-    power_up_spawn_rate_seconds = 1
+    power_up_spawn_rate_seconds = 20
     power_ups = []
     freeze_active = False
     auto_fire_active = False
-    explosions = []
 
     while running:
         global SCREEN_SHAKE
+
         # Calculate Time the Game has been Running
         if tick == FPS:
             time_played_seconds += 1
@@ -66,8 +68,7 @@ def game_loop():
             for shot in shots:
                 distance = math.sqrt((sphere.x_pos - shot.end_x_pos) ** 2 + (sphere.y_pos - shot.end_y_pos) ** 2)
                 if distance < sphere.radius:
-                    player.score += 1
-                    sphere_hit(shot, sphere, spheres)
+                    sphere_hit(shot, sphere, spheres, player)
                     sphere.frozen = False
                     shots.remove(shot)
                     del shot
@@ -87,7 +88,7 @@ def game_loop():
                 player.health -= 1
                 spheres.remove(sphere)
                 explosion = Explosion(SCREEN, sphere.x_pos, sphere.y_pos + sphere.radius)
-                explosions.append(explosion)
+                EXPLOSIONS.append(explosion)
                 SCREEN_SHAKE = 3
                 del sphere
             if len(spheres) == 0 or player.health == 0:
@@ -120,8 +121,12 @@ def game_loop():
         if auto_fire_active:
             shots, auto_fire_active = power_up_machine_gun(shots, player, tick, time_played_seconds)
 
+        for explosion in EXPLOSIONS:
+            if explosion.iteration > 10:
+                EXPLOSIONS.remove(explosion)
+
         # Call to Update Screen and Sets FPS
-        update_screen(player, shots, spheres, power_ups, explosions)
+        update_screen(player, shots, spheres, power_ups)
         CLOCK.tick(FPS)
 
 
@@ -169,7 +174,7 @@ def power_up_collected(player, power_up):
         return False
 
 
-def sphere_hit(shot, sphere, spheres):
+def sphere_hit(shot, sphere, spheres, player):
     if sphere.gravity == 0:
         sphere.gravity = 3
     # Calculate Shots X and Y Velocities
@@ -198,7 +203,7 @@ def sphere_hit(shot, sphere, spheres):
 
         spheres.append(new_sphere)
 
-    elif len(spheres) >= 4 and random.randint(1, 7) == 1:
+    elif len(spheres) >= 4 and random.randint(1, 4) == 1:
         new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
                             new_vel_y + random.randint(-5, 0))
         if sphere.frozen_time != 0:
@@ -208,21 +213,31 @@ def sphere_hit(shot, sphere, spheres):
 
     sphere.times_hit += 1
 
-    if sphere.times_hit == 7 and len(spheres) > 1:
+    if sphere.times_hit == 5 and len(spheres) > 1:
+        player.score += 1
+        explosion = Explosion(SCREEN, sphere.x_pos, sphere.y_pos + sphere.radius)
+        EXPLOSIONS.append(explosion)
         spheres.remove(sphere)
         del sphere
 
 
-def update_screen(player, shots, spheres, power_ups, explosions):
+def update_screen(player, shots, spheres, power_ups):
     """Calls all update functions and methods to draw everything to the screen"""
-    global SCREEN_SHAKE
+    global SCREEN_SHAKE, DISPLAY_CONTROLS
+
     if SCREEN_SHAKE == 0:
         SCREEN.blit(BACKGROUND, (0, 0))
     else:
         SCREEN.blit(BACKGROUND, (0, random.randint(2, 4)))
         SCREEN_SHAKE -= 1
 
-    for explosion in explosions:
+    if DISPLAY_CONTROLS and len(shots) == 0:
+        image = pygame.image.load('./Assets/controls.png')
+        SCREEN.blit(image, (150, 80))
+    else:
+        DISPLAY_CONTROLS = False
+
+    for explosion in EXPLOSIONS:
         explosion.update()
 
     for shot in shots:
