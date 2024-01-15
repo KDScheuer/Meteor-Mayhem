@@ -29,6 +29,14 @@ class Sphere:
             pygame.draw.circle(self.screen, 'red', self.tail_4, self.radius * .4)
             pygame.draw.circle(self.screen, 'red', self.tail_5, self.radius * .3)
             pygame.draw.circle(self.screen, 'red', self.tail_6, self.radius * .2)
+
+            pygame.draw.circle(self.screen, 'yellow', self.tail_1, self.radius * .5)
+            pygame.draw.circle(self.screen, 'yellow', self.tail_2, self.radius * .45)
+            pygame.draw.circle(self.screen, 'yellow', self.tail_3, self.radius * .4)
+            pygame.draw.circle(self.screen, 'yellow', self.tail_4, self.radius * .25)
+            pygame.draw.circle(self.screen, 'yellow', self.tail_5, self.radius * .2)
+            pygame.draw.circle(self.screen, 'yellow', self.tail_6, self.radius * .15)
+
             pygame.draw.circle(self.screen, 'brown', (self.x_pos, self.y_pos), self.radius)
 
         else:
@@ -59,7 +67,6 @@ class Sphere:
             self.tail_3 = self.tail_2
             self.tail_2 = self.tail_1
             self.tail_1 = (self.x_pos, self.y_pos)
-            print(self.y_vel)
 
         elif self.y_vel > -self.gravity and self.gravity != 0:
             self.tail_6 = (self.tail_5[0] + random.randint(-2, 2), self.tail_5[1] - 5)
@@ -67,10 +74,7 @@ class Sphere:
             self.tail_4 = (self.tail_3[0] + random.randint(-2, 2), self.tail_3[1] - 5)
             self.tail_3 = (self.tail_2[0] + random.randint(-2, 2), self.tail_2[1] - 5)
             self.tail_2 = (self.tail_1[0] + random.randint(-2, 2), self.tail_1[1] - 7)
-            print(self.y_vel)
             self.tail_1 = (self.x_pos, self.y_pos - 7)
-
-
 
 
 class Explosion:
