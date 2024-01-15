@@ -1,5 +1,5 @@
 import pygame
-import time
+import random
 
 class Sphere:
     def __init__(self, screen, screen_width, x_pos, y_pos, x_vel=0, y_vel=0, grav=3):
@@ -14,12 +14,26 @@ class Sphere:
         self.screen_width = screen_width
         self.frozen = False
         self.frozen_time = 0
+        self.tail_1 = (-100, -100)
+        self.tail_2 = (-100, -100)
+        self.tail_3 = (-100, -100)
+        self.tail_4 = (-100, -100)
+        self.tail_5 = (-100, -100)
+        self.tail_6 = (-100, -100)
 
     def update(self):
         if self.y_pos > 0:
-            pygame.draw.circle(self.screen, 'blue', (self.x_pos, self.y_pos), self.radius)
+            pygame.draw.circle(self.screen, 'red', self.tail_1, self.radius * .8)
+            pygame.draw.circle(self.screen, 'red', self.tail_2, self.radius * .6)
+            pygame.draw.circle(self.screen, 'red', self.tail_3, self.radius * .5)
+            pygame.draw.circle(self.screen, 'red', self.tail_4, self.radius * .4)
+            pygame.draw.circle(self.screen, 'red', self.tail_5, self.radius * .3)
+            pygame.draw.circle(self.screen, 'red', self.tail_6, self.radius * .2)
+            pygame.draw.circle(self.screen, 'brown', (self.x_pos, self.y_pos), self.radius)
+
         else:
-            pygame.draw.line(self.screen, 'blue', (self.x_pos - self.radius, 5), (self.x_pos + self.radius, 5), 5)
+            pygame.draw.line(self.screen, 'brown', (self.x_pos - self.radius, 5), (self.x_pos + self.radius, 5), 5)
+            pygame.draw.line(self.screen, 'red', (self.x_pos - self.radius, 0), (self.x_pos + self.radius, 0), 5)
 
     def move(self):
         if self.x_pos < self.radius / 2:
@@ -27,12 +41,36 @@ class Sphere:
         elif self.x_pos > self.screen_width - self.radius:
             self.x_vel *= -1
 
+        self.calculate_tail()
+
         self.x_pos += self.x_vel
         self.y_pos += self.y_vel
 
         self.y_vel *= .98
         self.x_vel *= .98
         self.y_pos += self.gravity
+
+    def calculate_tail(self):
+
+        if self.y_vel < -self.gravity:
+            self.tail_6 = self.tail_5
+            self.tail_5 = self.tail_4
+            self.tail_4 = self.tail_3
+            self.tail_3 = self.tail_2
+            self.tail_2 = self.tail_1
+            self.tail_1 = (self.x_pos, self.y_pos)
+            print(self.y_vel)
+
+        elif self.y_vel > -self.gravity and self.gravity != 0:
+            self.tail_6 = (self.tail_5[0] + random.randint(-2, 2), self.tail_5[1] - 5)
+            self.tail_5 = (self.tail_4[0] + random.randint(-2, 2), self.tail_4[1] - 5)
+            self.tail_4 = (self.tail_3[0] + random.randint(-2, 2), self.tail_3[1] - 5)
+            self.tail_3 = (self.tail_2[0] + random.randint(-2, 2), self.tail_2[1] - 5)
+            self.tail_2 = (self.tail_1[0] + random.randint(-2, 2), self.tail_1[1] - 7)
+            print(self.y_vel)
+            self.tail_1 = (self.x_pos, self.y_pos - 7)
+
+
 
 
 class Explosion:
