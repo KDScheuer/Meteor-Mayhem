@@ -15,6 +15,11 @@ FPS = 60
 SCREEN_SHAKE = 0
 DISPLAY_CONTROLS = True
 EXPLOSIONS = []
+pygame.mixer.init()
+CANNON_SOUND = pygame.mixer.Sound('./Assets/cannon.mp3')
+EXPLOSION_SOUND = pygame.mixer.Sound('./Assets/explosion.wav')
+pygame.mixer.set_num_channels(200)
+SOUND_CHANNELS = [pygame.mixer.Channel(i) for i in range(pygame.mixer.get_num_channels())]
 
 
 def game_loop():
@@ -63,13 +68,14 @@ def game_loop():
         # Checks if Player Quit the Game or Fired a Shot
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                return
 
             if event.type == pygame.MOUSEBUTTONDOWN and player.time_since_last_shot <= 0:
                 new_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
                 new_shot.move_shot()
                 shots.append(new_shot)
                 player.time_since_last_shot = 5
+                next((ch for ch in SOUND_CHANNELS if not ch.get_busy()), None).play(CANNON_SOUND)
 
         for shot in shots:
             shot.move_shot()
@@ -99,6 +105,7 @@ def game_loop():
                 explosion = Explosion(SCREEN, sphere.x_pos, sphere.y_pos + sphere.radius)
                 EXPLOSIONS.append(explosion)
                 SCREEN_SHAKE = 3
+                next((ch for ch in SOUND_CHANNELS if not ch.get_busy()), None).play(EXPLOSION_SOUND)
                 del sphere
             if len(spheres) == 0 or player.health == 0:
                 game_over = True
@@ -166,6 +173,7 @@ def power_up_machine_gun(shots, player, tick, game_time):
         auto_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
         auto_shot.move_shot()
         shots.append(auto_shot)
+        next((ch for ch in SOUND_CHANNELS if not ch.get_busy()), None).play(CANNON_SOUND)
 
     if game_time - player.machine_gun_active_time >= duration:
         player.machine_gun_active_time = 0
@@ -214,6 +222,7 @@ def sphere_hit(shot, sphere, spheres, player):
         explosion = Explosion(SCREEN, sphere.x_pos, sphere.y_pos + sphere.radius)
         EXPLOSIONS.append(explosion)
         spheres.remove(sphere)
+        next((ch for ch in SOUND_CHANNELS if not ch.get_busy()), None).play(EXPLOSION_SOUND)
         del sphere
 
 
@@ -297,6 +306,7 @@ def end_screen(player, shots, spheres, power_ups, game_over, ground):
                 new_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
                 new_shot.move_shot()
                 shots.append(new_shot)
+                next((ch for ch in SOUND_CHANNELS if not ch.get_busy()), None).play(CANNON_SOUND)
 
         for shot in shots:
             shot.move_shot()
