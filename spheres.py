@@ -14,6 +14,9 @@ class Sphere:
         self.screen_width = screen_width
         self.frozen = False
         self.frozen_time = 0
+        self.image = pygame.transform.scale(pygame.image.load('./Assets/sphere.png'),
+                                            (self.radius * 2, self.radius * 2))
+        self.surface = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
         self.tail_1 = (-100, -100)
         self.tail_2 = (-100, -100)
         self.tail_3 = (-100, -100)
@@ -30,14 +33,15 @@ class Sphere:
             pygame.draw.circle(self.screen, 'red', self.tail_5, self.radius * .3)
             pygame.draw.circle(self.screen, 'red', self.tail_6, self.radius * .2)
 
-            pygame.draw.circle(self.screen, 'yellow', self.tail_1, self.radius * .5)
-            pygame.draw.circle(self.screen, 'yellow', self.tail_2, self.radius * .45)
-            pygame.draw.circle(self.screen, 'yellow', self.tail_3, self.radius * .4)
-            pygame.draw.circle(self.screen, 'yellow', self.tail_4, self.radius * .25)
-            pygame.draw.circle(self.screen, 'yellow', self.tail_5, self.radius * .2)
-            pygame.draw.circle(self.screen, 'yellow', self.tail_6, self.radius * .15)
+            pygame.draw.circle(self.screen, 'orange', self.tail_1, self.radius * .5)
+            pygame.draw.circle(self.screen, 'orange', self.tail_2, self.radius * .45)
+            pygame.draw.circle(self.screen, 'orange', self.tail_3, self.radius * .4)
+            pygame.draw.circle(self.screen, 'orange', self.tail_4, self.radius * .25)
+            pygame.draw.circle(self.screen, 'orange', self.tail_5, self.radius * .2)
+            pygame.draw.circle(self.screen, 'orange', self.tail_6, self.radius * .15)
 
-            pygame.draw.circle(self.screen, 'brown', (self.x_pos, self.y_pos), self.radius)
+            self.screen.blit(self.surface, (self.x_pos - self.radius, self.y_pos - self.radius))
+            self.screen.blit(self.image, (self.x_pos - self.radius, self.y_pos - self.radius))
 
         else:
             pygame.draw.line(self.screen, 'brown', (self.x_pos - self.radius, 5), (self.x_pos + self.radius, 5), 5)
@@ -83,19 +87,19 @@ class Explosion:
         self.y_pos = y_pos
         self.iteration = 1
         self.screen = screen
-        self.image_1 = pygame.image.load('./Assets/explosion_1.png')
-        self.image_2 = pygame.image.load('./Assets/explosion_2.png')
-        self.image_3 = pygame.image.load('./Assets/explosion_3.png')
-        self.image_4 = pygame.image.load('./Assets/explosion_4.png')
+        self.image_1 = pygame.transform.scale(pygame.image.load('./Assets/explosion_1.png'), (30, 30))
+        self.image_2 = pygame.transform.scale(pygame.image.load('./Assets/explosion_2.png'), (40, 40))
+        self.image_3 = pygame.transform.scale(pygame.image.load('./Assets/explosion_3.png'), (50, 50))
+        self.image_4 = pygame.transform.scale(pygame.image.load('./Assets/explosion_4.png'), (60, 60))
 
     def update(self):
-        if self.iteration <= 3:
+        if self.iteration <= 4:
             self.screen.blit(self.image_1, (self.x_pos - 5, self.y_pos - 10))
-        elif self.iteration <= 6:
+        elif self.iteration <= 8:
             self.screen.blit(self.image_2, (self.x_pos - 10, self.y_pos - 20))
-        elif self.iteration <= 10:
+        elif self.iteration <= 12:
             self.screen.blit(self.image_3, (self.x_pos - 15, self.y_pos - 30))
-        elif self.iteration <= 15:
+        elif self.iteration <= 16:
             self.screen.blit(self.image_4, (self.x_pos - 20, self.y_pos - 40))
 
         self.iteration += 1

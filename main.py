@@ -29,9 +29,18 @@ def game_loop():
     power_ups = []
     freeze_active = False
     auto_fire_active = False
+    game_over = False
 
     while running:
         global SCREEN_SHAKE
+
+        CLOCK.tick(FPS)
+
+        if game_over is True:
+            quit_game = end_screen(player, shots, spheres, power_ups, game_over, ground)
+            if quit_game:
+                return
+            continue
 
         # Calculate Time the Game has been Running
         if tick == FPS:
@@ -55,6 +64,7 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
             if event.type == pygame.MOUSEBUTTONDOWN and player.time_since_last_shot <= 0:
                 new_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
                 new_shot.move_shot()
@@ -82,9 +92,8 @@ def game_loop():
             else:
                 sphere.move()
 
-            ###############################################################################################
-            # TODO DELETE THIS AFTER DAMAGE IS ADDED THIS IS FOR TESTING ONLY
             if sphere.y_pos + sphere.radius > ground:
+
                 player.health -= 1
                 spheres.remove(sphere)
                 explosion = Explosion(SCREEN, sphere.x_pos, sphere.y_pos + sphere.radius)
@@ -92,9 +101,11 @@ def game_loop():
                 SCREEN_SHAKE = 3
                 del sphere
             if len(spheres) == 0 or player.health == 0:
-                print(player.score)
-                return
-        ################################################################################################
+                game_over = True
+                for shot in shots:
+                    shots.remove(shot)
+                player.x_pos = WIDTH // 2 - player.tank_width // 2
+                player.y_pos = HEIGHT * .85
 
         if time_played_seconds % power_up_spawn_rate_seconds == 0 and time_played_seconds != 0 and len(
                 power_ups) == 0:
@@ -122,12 +133,11 @@ def game_loop():
             shots, auto_fire_active = power_up_machine_gun(shots, player, tick, time_played_seconds)
 
         for explosion in EXPLOSIONS:
-            if explosion.iteration > 10:
+            if explosion.iteration > 16:
                 EXPLOSIONS.remove(explosion)
 
-        # Call to Update Screen and Sets FPS
-        update_screen(player, shots, spheres, power_ups)
-        CLOCK.tick(FPS)
+        # Call to Update Screen
+        update_screen(player, shots, spheres, power_ups, game_over)
 
 
 def power_up_freeze(spheres, game_time):
@@ -195,7 +205,7 @@ def sphere_hit(shot, sphere, spheres, player):
     sphere.x_vel = new_vel_x
     sphere.y_vel = new_vel_y
 
-    difficulty_curve(player, new_vel_y, spheres, sphere)
+    difficulty_curve(new_vel_y, spheres, sphere)
 
     sphere.times_hit += 1
 
@@ -207,7 +217,7 @@ def sphere_hit(shot, sphere, spheres, player):
         del sphere
 
 
-def difficulty_curve(player, vel_y, spheres, sphere):
+def difficulty_curve(vel_y, spheres, sphere):
 
     if len(spheres) < 4:
         new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
@@ -226,7 +236,7 @@ def difficulty_curve(player, vel_y, spheres, sphere):
         spheres.append(new_sphere)
 
 
-def update_screen(player, shots, spheres, power_ups):
+def update_screen(player, shots, spheres, power_ups, game_over):
     """Calls all update functions and methods to draw everything to the screen"""
     global SCREEN_SHAKE, DISPLAY_CONTROLS
 
@@ -254,7 +264,59 @@ def update_screen(player, shots, spheres, power_ups):
         power_ups[0].update()
 
     player.update()
-    pygame.display.update()
+
+    if game_over is False:
+        pygame.display.update()
+
+
+def end_screen(player, shots, spheres, power_ups, game_over, ground):
+    global DISPLAY_CONTROLS
+
+    while True:
+        update_screen(player, shots, spheres, power_ups, game_over)
+
+        image = pygame.image.load('./Assets/game_over.png')
+        SCREEN.blit(image, (0, 0))
+        image = pygame.transform.scale(pygame.image.load('./Assets/target.png'), (50, 50))
+        surface = pygame.Surface((50, 50), pygame.SRCALPHA)
+        SCREEN.blit(surface, (250, 430))
+        SCREEN.blit(image, (250, 430))
+        SCREEN.blit(surface, (700, 430))
+        SCREEN.blit(image, (700, 430))
+
+        pygame.display.update()
+
+        player.aim_point = pygame.mouse.get_pos()
+        player.move_barrel()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return True
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                new_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
+                new_shot.move_shot()
+                shots.append(new_shot)
+
+        for shot in shots:
+            shot.move_shot()
+
+        for sphere in spheres:
+            sphere.move()
+
+            if sphere.y_pos + sphere.radius > ground:
+                spheres.remove(sphere)
+                explosion = Explosion(SCREEN, sphere.x_pos, sphere.y_pos + sphere.radius)
+                EXPLOSIONS.append(explosion)
+                del sphere
+
+        for shot in shots:
+            if math.sqrt((275 - shot.end_x_pos) ** 2 + (455 - shot.end_y_pos) ** 2) < 25:
+                DISPLAY_CONTROLS = True
+                game_loop()
+            if math.sqrt((725 - shot.end_x_pos) ** 2 + (455 - shot.end_y_pos) ** 2) < 25:
+                return True
+        CLOCK.tick(60)
 
 
 def main():

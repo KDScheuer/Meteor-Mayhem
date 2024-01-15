@@ -4,12 +4,12 @@ import math
 
 class Player:
     def __init__(self, screen, width, height):
-        self.x_pos = width // 2
-        self.y_pos = height * .85
         self.screen = screen
         self.screen_width = width
         self.tank_width = 100
         self.tank_height = 50
+        self.x_pos = width // 2 - self.tank_width // 2
+        self.y_pos = height * .85
         self.move_speed = 10
         self.center = ((self.x_pos + self.tank_width / 2), (self.y_pos + self.tank_height / 2))
         image = pygame.image.load('./Assets/tank.png')
