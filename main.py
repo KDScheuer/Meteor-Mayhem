@@ -1,6 +1,7 @@
 import pygame
 import math
 import random
+import sys
 from player import Player
 from shots import Shot
 from spheres import Sphere, Explosion
@@ -18,6 +19,7 @@ EXPLOSIONS = []
 pygame.mixer.init()
 CANNON_SOUND = pygame.mixer.Sound('./Assets/cannon.mp3')
 EXPLOSION_SOUND = pygame.mixer.Sound('./Assets/explosion.wav')
+POWER_UP_SOUND = pygame.mixer.Sound('./Assets/power-up.wav')
 pygame.mixer.set_num_channels(200)
 SOUND_CHANNELS = [pygame.mixer.Channel(i) for i in range(pygame.mixer.get_num_channels())]
 
@@ -43,8 +45,10 @@ def game_loop():
 
         if game_over is True:
             quit_game = end_screen(player, shots, spheres, power_ups, game_over, ground)
+            print(quit_game)
             if quit_game:
-                return
+                pygame.quit()
+                sys.exit()
             continue
 
         # Calculate Time the Game has been Running
@@ -68,7 +72,8 @@ def game_loop():
         # Checks if Player Quit the Game or Fired a Shot
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
+                pygame.quit()
+                sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN and player.time_since_last_shot <= 0:
                 new_shot = Shot(SCREEN, player.aim_point, player.barrel_angle)
@@ -124,6 +129,7 @@ def game_loop():
             if power_ups[0].y_pos + power_ups[0].height > ground:
                 power_ups.remove(power_ups[0])
             elif power_up_collected(player, power_ups[0]):
+                next((ch for ch in SOUND_CHANNELS if not ch.get_busy()), None).play(POWER_UP_SOUND)
                 if power_ups[0].power == 1:
                     player.health += 1
                 elif power_ups[0].power == 2:
