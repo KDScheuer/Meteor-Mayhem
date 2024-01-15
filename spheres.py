@@ -1,6 +1,7 @@
 import pygame
 import random
 
+
 class Sphere:
     def __init__(self, screen, screen_width, x_pos, y_pos, x_vel=0, y_vel=0, grav=3):
         self.x_pos = x_pos
@@ -48,7 +49,7 @@ class Sphere:
             self.screen.blit(self.image, (self.x_pos - self.radius, self.y_pos - self.radius))
 
         else:
-            # If the sphere is not visible this draws a line at the top of the screen to indicate its postion
+            # If the sphere is not visible this draws a line at the top of the screen to indicate its position
             pygame.draw.line(self.screen, 'brown', (self.x_pos - self.radius, 5), (self.x_pos + self.radius, 5), 5)
             pygame.draw.line(self.screen, 'red', (self.x_pos - self.radius, 0), (self.x_pos + self.radius, 0), 5)
 
@@ -75,7 +76,7 @@ class Sphere:
 
     def calculate_tail(self):
 
-        # Checks if the sphere is traveling up to avoid the tail being to spaced out
+        # Checks if the sphere is traveling up to avoid the tail being too spaced out
         if self.y_vel < -self.gravity:
             self.tail_6 = self.tail_5
             self.tail_5 = self.tail_4
@@ -116,5 +117,5 @@ class Explosion:
         elif self.iteration <= 16:
             self.screen.blit(self.image_4, (self.x_pos - 20, self.y_pos - 40))
 
-        # Updates the iteration so it can draw the correct image on the next go around
+        # Updates the iteration, so it can draw the correct image on the next go around
         self.iteration += 1
