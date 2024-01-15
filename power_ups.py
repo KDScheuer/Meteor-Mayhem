@@ -21,9 +21,10 @@ class PowerUp:
             image = pygame.image.load('./Assets/bullets.png')
             self.image = pygame.transform.scale(image, (self.width, self.height))
 
-
     def move(self):
+        # Moves the power up at the rate of gravity
         self.y_pos += self.gravity
 
     def update(self):
+        # Draws the power up to the screen
         self.screen.blit(self.image, (self.x_pos, self.y_pos))

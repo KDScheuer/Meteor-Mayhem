@@ -15,12 +15,15 @@ class Shot:
         self.screen = screen
 
     def move_shot(self):
+        # moves the shots in the correct direction and angle
         self.end_x_pos = self.start_x_pos + self.length * math.cos(self.shot_angle)
         self.end_y_pos = self.start_y_pos + self.length * math.sin(self.shot_angle)
 
     def update(self):
+        # Draws the shots to the screen
         pygame.draw.line(self.screen, 'yellow', (self.start_x_pos, self.start_y_pos),
                          (self.end_x_pos, self.end_y_pos), 2)
 
+        # Updates the start positions, so that they are correct the next time move_shot is called
         self.start_x_pos = self.start_x_pos + self.speed * math.cos(self.shot_angle)
         self.start_y_pos = self.start_y_pos + self.speed * math.sin(self.shot_angle)

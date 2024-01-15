@@ -32,9 +32,11 @@ class Player:
 
     def update(self):
         """Draws Player to Screen"""
+        # Draws Player and Cross-hair to screen
         self.screen.blit(self.image, (self.x_pos, self.y_pos))
         self.screen.blit(self.target, self.target_location)
 
+        # Positions the health number to avoid overlap with the heart icon
         if self.health < 10:
             health_surface = self.font.render(str(self.health), True, 'white')
             self.screen.blit(health_surface, self.health_pos_1_digit)
@@ -42,10 +44,14 @@ class Player:
             health_surface = self.font.render(str(self.health), True, 'white')
             self.screen.blit(health_surface, self.health_pos_2_digit)
 
+        # Draws the score to the screen
         score_surface = self.font.render(str(self.score), True, 'white')
         self.screen.blit(score_surface, self.score_pos)
 
+        # Draws the Tank Barrel to the Screen
         pygame.draw.line(self.screen, (117, 71, 18), self.center, self.aim_point, 5)
+
+        # Decreases the time since last shot to limit fire rate
         self.time_since_last_shot -= 1
 
     def move_tank(self, direction):
