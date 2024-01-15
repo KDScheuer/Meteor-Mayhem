@@ -195,21 +195,7 @@ def sphere_hit(shot, sphere, spheres, player):
     sphere.x_vel = new_vel_x
     sphere.y_vel = new_vel_y
 
-    if len(spheres) < 4:
-        new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
-                            new_vel_y + random.randint(-5, 0))
-        if sphere.frozen_time != 0:
-            new_sphere.frozen_time = sphere.frozen_time
-
-        spheres.append(new_sphere)
-
-    elif len(spheres) >= 4 and random.randint(1, 4) == 1:
-        new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
-                            new_vel_y + random.randint(-5, 0))
-        if sphere.frozen_time != 0:
-            new_sphere.frozen_time = sphere.frozen_time
-
-        spheres.append(new_sphere)
+    difficulty_curve(player, new_vel_y, spheres, sphere)
 
     sphere.times_hit += 1
 
@@ -219,6 +205,25 @@ def sphere_hit(shot, sphere, spheres, player):
         EXPLOSIONS.append(explosion)
         spheres.remove(sphere)
         del sphere
+
+
+def difficulty_curve(player, vel_y, spheres, sphere):
+
+    if len(spheres) < 4:
+        new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
+                            vel_y + random.randint(-5, 0))
+        if sphere.frozen_time != 0:
+            new_sphere.frozen_time = sphere.frozen_time
+
+        spheres.append(new_sphere)
+
+    elif len(spheres) >= 4 and random.randint(1, 5) == 1:
+        new_sphere = Sphere(SCREEN, WIDTH, sphere.x_pos, sphere.y_pos, random.randint(-5, 5),
+                            vel_y + random.randint(-5, 0))
+        if sphere.frozen_time != 0:
+            new_sphere.frozen_time = sphere.frozen_time
+
+        spheres.append(new_sphere)
 
 
 def update_screen(player, shots, spheres, power_ups):
